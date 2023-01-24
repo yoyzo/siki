@@ -34,6 +34,13 @@ export function Episode(
 ): episodeInterface {
     return { title, url, episode, season, thumbnail, plot }
 }
+export function Season(
+    season_number: number,
+    episodes: Array<episodeInterface>
+): seasonInterface {
+    return { season_number, episodes }
+}
+
 export function seriesResponse(
     title: string,
     url: string,
@@ -41,16 +48,16 @@ export function seriesResponse(
     year: number,
     plot: string,
     trailer: string,
-    episodes: Array<episodeInterface>
+    seasons: Array<seasonInterface>
 ): seriesInterface {
-    return { title, url, posterUrl, year, plot, trailer, isMovie: false, episodes }
+    return { title, url, posterUrl, year, plot, trailer, isMovie: false, seasons }
 }
 export function mediaLink(
     title: string,
-    raw: string,
+    url: string,
     quality: number,
     headers: Array<Object>,
-    m3u8: boolean,
+    isM3U8: boolean,
 ): mediaLink {
-    return { title, raw, quality, headers, m3u8 }
+    return { title, url, quality, headers, isM3U8 }
 }

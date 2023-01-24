@@ -73,7 +73,7 @@ export default class AkwamProvider implements ProviderClass {
                     null
                 )
             })
-            return convert.seriesResponse(title, url, posterUrl, year, plot, trailer, episodes.toArray().sort(function (a, b) { return a.episode < b.episode; }))
+            return convert.seriesResponse(title, url, posterUrl, year, plot, trailer, [convert.Season(0, episodes.toArray())])
         }
     }
     async loadLinks(data: any): Promise<Array<mediaLink>> {

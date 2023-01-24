@@ -46,6 +46,10 @@ declare global {
         thumbnail: string,
         plot: string,
     }
+    interface seasonInterface {
+        season_number: number,
+        episodes: Array<episodeInterface>
+    }
     interface seriesInterface {
         title: string,
         url: string,
@@ -54,13 +58,13 @@ declare global {
         plot: string,
         trailer: string,
         isMovie: false,
-        episodes: Array<episodeInterface>
+        seasons: Array<seasonInterface>
     }
     interface mediaLink {
         title: string,
-        raw: string,
+        url: string,
         quality: number,
         headers: Array<Object>,
-        m3u8: boolean,
+        isM3U8: boolean,
     }
 }
