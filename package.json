@@ -1,6 +1,6 @@
 {
   "name": "siki",
-  "version": "2.0.4",
+  "version": "2.0.5",
   "description": "Wrapper for scraping sites, and attaching routes to fastify",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -19,7 +19,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ImZaw/siki.git"
+    "url": "https://github.com/yoyzo/siki.git"
   },
   "dependencies": {
     "axios": "^1.2.1",
