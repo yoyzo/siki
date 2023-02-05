@@ -1,5 +1,4 @@
 const axios = require("axios")
-const cheerio = require("cheerio");
 import * as convert from "../utils/convertFunctions"
 
 axios.interceptors.request.use(config => {
@@ -50,7 +49,7 @@ export default class NetfilmProvider implements ProviderClass {
         })
     }
     async load(url: string): Promise<movieInterface | seriesInterface> {
-        const res = (await axios.get(url)).data.data
+        const res = (await axios.get(url.replaceAll("%26", "="))).data.data
         const title = res.name
         const plot = res.introduction
         const year = parseInt(res.year)
@@ -80,7 +79,7 @@ export default class NetfilmProvider implements ProviderClass {
         }
     }
     async loadLinks(data: any): Promise<Array<mediaLink>> {
-        const res = (await axios.get(data)).data.data
+        const res = (await axios.get(data.replaceAll("%26", "="))).data.data
         return res.qualities.map((index, element) => {
             let el = res.qualities[element]
             return convert.mediaLink(
