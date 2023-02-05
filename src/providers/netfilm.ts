@@ -66,10 +66,11 @@ export default class NetfilmProvider implements ProviderClass {
             )
         } else {
             const episodes = res.episodeVo.map((index, element) => {
+                let value = res.episodeVo[element]
                 return convert.Episode(
-                    `Episode ${element.seriesNo}`,
-                    btoa(`${this.mainUrl}/episode?category=${res.category}&id=${res.id}&episode=${res.episodeVo[element].id}`),
-                    parseInt(element.seriesNo),
+                    `Episode ${value.seriesNo}`,
+                    btoa(`${this.mainUrl}/episode?category=${res.category}&id=${res.id}&episode=${value.id}`),
+                    parseInt(value.seriesNo),
                     res.seriesNo,
                     res.coverHorizontalUrl,
                     null
