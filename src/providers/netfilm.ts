@@ -24,7 +24,7 @@ export default class NetfilmProvider implements ProviderClass {
                     return convert.searchResponse(
                         el.title,
                         (el.category == 1) ? false : true,
-                        `${this.mainUrl}/detail?category=${el.category}&id=${el.id}`,
+                        `${this.mainUrl}/detail?category=${el.category}&id=${el.id}`.replaceAll("=", "%26"),
                         el.imageUrl,
                         null,
                         null
@@ -42,7 +42,7 @@ export default class NetfilmProvider implements ProviderClass {
             return convert.searchResponse(
                 value.name,
                 (value.domainType == 1) ? false : true,
-                `${this.mainUrl}/detail?category=${value.domainType}&id=${value.id}`,
+                `${this.mainUrl}/detail?category=${value.domainType}&id=${value.id}`.replaceAll("=", "%26"),
                 value.coverVerticalUrl,
                 parseInt(value.releaseTime),
                 parseFloat(value.sort)
@@ -59,7 +59,7 @@ export default class NetfilmProvider implements ProviderClass {
         if (res.category == 0) {
             return convert.movieResponse(
                 title, 
-                `${this.mainUrl}/episode?category=${res.category}&id=${res.id}&episode=${res.episodeVo[0].id}`, 
+                `${this.mainUrl}/episode?category=${res.category}&id=${res.id}&episode=${res.episodeVo[0].id}`.replaceAll("=", "%26"), 
                 posterUrl, 
                 year, 
                 plot, 
@@ -69,7 +69,7 @@ export default class NetfilmProvider implements ProviderClass {
             const episodes = res.episodeVo.map((index, element) => {
                 return convert.Episode(
                     `Episode ${element.seriesNo}`,
-                    `${this.mainUrl}/episode?category=${res.category}&id=${res.id}&episode=${res.episodeVo[element].id}`,
+                    `${this.mainUrl}/episode?category=${res.category}&id=${res.id}&episode=${res.episodeVo[element].id}`.replaceAll("=", "%26"),
                     parseInt(element.seriesNo),
                     res.seriesNo,
                     res.coverHorizontalUrl,
