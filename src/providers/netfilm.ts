@@ -23,7 +23,7 @@ export default class NetfilmProvider implements ProviderClass {
                     return convert.searchResponse(
                         el.title,
                         (el.category == 1) ? false : true,
-                        `${this.mainUrl}/detail?category=${el.category}&id=${el.id}`.replaceAll("=", "%26"),
+                        btoa(`${this.mainUrl}/detail?category=${el.category}&id=${el.id}`),
                         el.imageUrl,
                         null,
                         null
@@ -41,7 +41,7 @@ export default class NetfilmProvider implements ProviderClass {
             return convert.searchResponse(
                 value.name,
                 (value.domainType == 1) ? false : true,
-                `${this.mainUrl}/detail?category=${value.domainType}&id=${value.id}`.replaceAll("=", "%26"),
+                btoa(`${this.mainUrl}/detail?category=${value.domainType}&id=${value.id}`),
                 value.coverVerticalUrl,
                 parseInt(value.releaseTime),
                 parseFloat(value.sort)
@@ -49,7 +49,7 @@ export default class NetfilmProvider implements ProviderClass {
         })
     }
     async load(url: string): Promise<movieInterface | seriesInterface> {
-        const res = (await axios.get(url.replaceAll("%26", "="))).data.data
+        const res = (await axios.get(Buffer.from(url, 'base64').toString())).data.data
         const title = res.name
         const plot = res.introduction
         const year = parseInt(res.year)
@@ -58,7 +58,7 @@ export default class NetfilmProvider implements ProviderClass {
         if (res.category == 0) {
             return convert.movieResponse(
                 title, 
-                `${this.mainUrl}/episode?category=${res.category}&id=${res.id}&episode=${res.episodeVo[0].id}`.replaceAll("=", "%26"), 
+                btoa(`${this.mainUrl}/episode?category=${res.category}&id=${res.id}&episode=${res.episodeVo[0].id}`), 
                 posterUrl, 
                 year, 
                 plot, 
@@ -68,7 +68,7 @@ export default class NetfilmProvider implements ProviderClass {
             const episodes = res.episodeVo.map((index, element) => {
                 return convert.Episode(
                     `Episode ${element.seriesNo}`,
-                    `${this.mainUrl}/episode?category=${res.category}&id=${res.id}&episode=${res.episodeVo[element].id}`.replaceAll("=", "%26"),
+                    btoa(`${this.mainUrl}/episode?category=${res.category}&id=${res.id}&episode=${res.episodeVo[element].id}`),
                     parseInt(element.seriesNo),
                     res.seriesNo,
                     res.coverHorizontalUrl,
@@ -79,7 +79,7 @@ export default class NetfilmProvider implements ProviderClass {
         }
     }
     async loadLinks(data: any): Promise<Array<mediaLink>> {
-        const res = (await axios.get(data.replaceAll("%26", "="))).data.data
+        const res = (await axios.get(Buffer.from(data, 'base64').toString())).data.data
         return res.qualities.map((index, element) => {
             let el = res.qualities[element]
             return convert.mediaLink(

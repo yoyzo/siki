@@ -29,7 +29,7 @@ export function registerApi(providerClass: ProviderClass | any): boolean {
                     reply.code(200).send({
                         "status": 200,
                         "result": response.map(value => {
-                            value.posts = value.posts.map(obj => Object.assign(obj, { nextApi: hostUrl + "/load?url=" + obj.url }))
+                            value.posts = value.posts.map(obj => Object.assign(obj, { nextApi: hostUrl + "/load?data=" + obj.url }))
                             return value
                         })
                     })
@@ -49,7 +49,7 @@ export function registerApi(providerClass: ProviderClass | any): boolean {
                     reply.code(200).send({
                         "status": 200,
                         "result": response.map(value =>
-                            Object.assign(value, { nextApi: hostUrl + "/load?url=" + value.url })
+                            Object.assign(value, { nextApi: hostUrl + "/load?data=" + value.url })
                         )
                     })
                 } catch (err) {
@@ -62,10 +62,9 @@ export function registerApi(providerClass: ProviderClass | any): boolean {
             instance.get("/load", async (request, reply) => {
                 const hostUrl = request.protocol + '://' + request.hostname + "/" + newProviderClass.name.toLowerCase()
                 try {
-                    const url = request.query.url
-                    if (!url || url.length <= 0) throw new Error("`url` is required");
-                    new URL(url)
-                    let response = await newProviderClass.load(url)
+                    const data = request.query.data
+                    if (!data || data.length <= 0) throw new Error("`data` is required");
+                    let response = await newProviderClass.load(data)
                     if (response.episodes != undefined) {
                         response.episodes = response.episodes.map(value => Object.assign(value, { nextApi: hostUrl + "/loadLinks?data=" + value.url }))
                     } else {

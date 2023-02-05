@@ -62,7 +62,7 @@ const { attachApi } = require("siki");
 
 | Parameter | Type     | Description                       |
 | :-------- | :------- | :-------------------------------- |
-| `url`      | `string` | **Required**. The url of that movie/series |
+| `data`      | `any` | **Required**. The url of that movie/series (depends on site) |
 
 #### Get video links of the movie/series episodes in a provider
 
