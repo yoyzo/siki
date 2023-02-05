@@ -64,6 +64,7 @@ declare global {
         title: string,
         url: string,
         quality: number,
+        subtitles: Array<{language: string, url: string}>,
         headers: Array<Object>,
         isM3U8: boolean,
     }

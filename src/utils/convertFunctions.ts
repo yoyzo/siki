@@ -56,8 +56,9 @@ export function mediaLink(
     title: string,
     url: string,
     quality: number,
+    subtitles: Array<{language: string, url: string}>,
     headers: Array<Object>,
     isM3U8: boolean,
 ): mediaLink {
-    return { title, url, quality, headers, isM3U8 }
+    return { title, url, quality, subtitles, headers, isM3U8 }
 }

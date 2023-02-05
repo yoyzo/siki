@@ -2,6 +2,8 @@ globalThis.providers = []
 const { registerApi } = require("./src/utils/registerApi.js");
 
 const akwam = require("./src/providers/akwam").default;
+const netfilm = require("./src/providers/netfilm").default;
+
 
 export async function attachApi(fastifyApp) {
     globalThis.app = fastifyApp;
@@ -22,6 +24,7 @@ export async function attachApi(fastifyApp) {
     })
     // Init providers here
     await registerApi(akwam)
+    await registerApi(netfilm)
     // ====================
     return globalThis.app
 }

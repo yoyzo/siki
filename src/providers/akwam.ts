@@ -88,6 +88,7 @@ export default class AkwamProvider implements ProviderClass {
                 "Akwam",
                 $(element).attr("src"),
                 $(element).attr("size"),
+                [],
                 [{ "Referer": this.mainUrl }],
                 $(element).attr("src").includes(".m3u8")
             )
