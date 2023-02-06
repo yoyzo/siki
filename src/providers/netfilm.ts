@@ -1,6 +1,5 @@
 const axios = require("axios")
-import * as convert from "../utils/convertFunctions"
-
+import { Episode, HomePage, Season, mediaLink, movieResponse, searchResponse, seriesResponse } from "../utils/convert";
 axios.interceptors.request.use(config => {
     config.headers['Accept-Encoding'] = 'null';
     return config;
@@ -21,7 +20,7 @@ export default class NetfilmProvider implements ProviderClass {
             const response = (await axios.get(json.url)).data.data.homeSections
             response.forEach(element => {
                 let posts = element.homeMovies.map(el=> {
-                    return convert.searchResponse(
+                    return searchResponse(
                         el.title,
                         (el.category == 1) ? tvTypes.SERIES : tvTypes.MOVIE,
                         `${this.mainUrl}/detail?category=${el.category}&id=${el.id}`,
@@ -32,7 +31,7 @@ export default class NetfilmProvider implements ProviderClass {
                         btoa(`${this.mainUrl}/detail?category=${el.category}&id=${el.id}`)
                     )
                 })
-                finalList.push(convert.HomePage(element.homeSectionName, posts))
+                finalList.push(HomePage(element.homeSectionName, posts))
             });
         }))
         return finalList
@@ -41,7 +40,7 @@ export default class NetfilmProvider implements ProviderClass {
         const res = (await axios.get(`${this.mainUrl}/search?keyword=${query.replaceAll(" ", "%20")}&size=25`)).data
         return res.data.results.map((index, element) => {
             let value = res.data.results[element]
-            return convert.searchResponse(
+            return searchResponse(
                 value.name,
                 (value.domainType == 1) ? tvTypes.SERIES : tvTypes.MOVIE,
                 `${this.mainUrl}/detail?category=${value.domainType}&id=${value.id}`,
@@ -61,7 +60,7 @@ export default class NetfilmProvider implements ProviderClass {
         const posterUrl = res.coverHorizontalUrl
         const trailer = null
         if (res.category == 0) {
-            return convert.movieResponse(
+            return movieResponse(
                 title, 
                 `${this.mainUrl}/episode?category=${res.category}&id=${res.id}&episode=${res.episodeVo[0].id}`, 
                 posterUrl, 
@@ -74,7 +73,7 @@ export default class NetfilmProvider implements ProviderClass {
         } else {
             const episodes = res.episodeVo.map((index, element) => {
                 let value = res.episodeVo[element]
-                return convert.Episode(
+                return Episode(
                     `Episode ${value.seriesNo}`,
                     `${this.mainUrl}/episode?category=${res.category}&id=${res.id}&episode=${value.id}`,
                     parseInt(value.seriesNo),
@@ -85,14 +84,14 @@ export default class NetfilmProvider implements ProviderClass {
                     btoa(`${this.mainUrl}/episode?category=${res.category}&id=${res.id}&episode=${value.id}`)
                 )
             })
-            return convert.seriesResponse(title, url, posterUrl, year, plot, trailer, [], [convert.Season(res.seriesNo, episodes)])
+            return seriesResponse(title, url, posterUrl, year, plot, trailer, [], [Season(res.seriesNo, episodes)])
         }
     }
     async loadLinks(data: any): Promise<Array<mediaLink>> {
         const res = (await axios.get(Buffer.from(data, 'base64').toString())).data.data
         return res.qualities.map((index, element) => {
             let el = res.qualities[element]
-            return convert.mediaLink(
+            return mediaLink(
                 "Netfilm",
                 el.url,
                 el.quality,

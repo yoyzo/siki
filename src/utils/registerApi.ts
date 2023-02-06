@@ -1,4 +1,4 @@
-import {tvTypesToWord} from "./convertFunctions";
+import {tvTypesToWord} from "./convert";
 export function registerApi(providerClass: ProviderClass | any): boolean {
     try {
         globalThis.providers.push(providerClass)

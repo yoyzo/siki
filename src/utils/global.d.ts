@@ -1,5 +1,4 @@
 export { };
-import {tvTypesToWord} from "./convertFunctions";
 
 declare global {
     const enum tvTypes {
@@ -23,6 +22,11 @@ declare global {
         search(query: string): Promise<Array<searchInterface>>,
         load(url: string): Promise<movieInterface | seriesInterface>,
         loadLinks(data: any): Promise<Array<mediaLink>>
+    }
+    interface ExtractorClass {
+        name: string,
+        mainUrl: string,
+        load(url: string): Promise<Array<mediaLink>>
     }
     interface homeInterface {
         title: string,

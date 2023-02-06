@@ -1,6 +1,6 @@
 const axios = require("axios")
 const cheerio = require("cheerio");
-import * as convert from "../utils/convertFunctions"
+import { Episode, HomePage, Season, mediaLink, movieResponse, searchResponse, seriesResponse } from "../utils/convert";
 
 axios.interceptors.request.use(config => {
     config.headers['Accept-Encoding'] = 'null';
@@ -22,7 +22,7 @@ export default class AkwamProvider implements ProviderClass {
             const posts = $("div[class=\"col-lg-auto col-md-4 col-6 mb-12\"]").map((index, element) => {
                 const post = $(element)
                 const titleElement = post.find("h3.entry-title > a")
-                return convert.searchResponse(
+                return searchResponse(
                     titleElement.text(),
                     (json.title == "Movies") ? tvTypes.MOVIE : tvTypes.SERIES,
                     titleElement.attr("href"),
@@ -33,7 +33,7 @@ export default class AkwamProvider implements ProviderClass {
                     titleElement.attr("href")
                 )
             }).toArray()
-            return convert.HomePage(json.title, posts)
+            return HomePage(json.title, posts)
         }))
     }
     async search(query) {
@@ -43,7 +43,7 @@ export default class AkwamProvider implements ProviderClass {
             const post = $(element)
             const titleElement = post.find("h3.entry-title > a")
             if (!/\/movie\/|\/series\//.test(titleElement.attr("href"))) return null;
-            return convert.searchResponse(
+            return searchResponse(
                 titleElement.text(),
                 (titleElement.attr("href").includes("/movie/")) ? tvTypes.MOVIE : tvTypes.SERIES,
                 titleElement.attr("href"),
@@ -64,12 +64,12 @@ export default class AkwamProvider implements ProviderClass {
         const posterUrl = $("picture > img.img-fluid").first().attr("src")
         const trailer = $("a[class='btn btn-light btn-pill d-flex align-items-center']").attr("href")
         if (/movie/.test(url)) {
-            return convert.movieResponse(title, url, posterUrl, year, plot, trailer, [], url)
+            return movieResponse(title, url, posterUrl, year, plot, trailer, [], url)
         } else {
             const episodes = $("div.row > div[class='bg-primary2 p-4 col-lg-4 col-md-6 col-12']").map((index, element) => {
                 const episode = $(element)
                 const episodeTitleElement = episode.find("h2 > a")
-                return convert.Episode(
+                return Episode(
                     episodeTitleElement.text(),
                     episodeTitleElement.attr("href"),
                     parseInt(episodeTitleElement.text().replace(/:.*/g, "").replace(/\D/g, '')),
@@ -80,7 +80,7 @@ export default class AkwamProvider implements ProviderClass {
                     episodeTitleElement.attr("href")
                 )
             })
-            return convert.seriesResponse(title, url, posterUrl, year, plot, trailer, [], [convert.Season(0, episodes.toArray())])
+            return seriesResponse(title, url, posterUrl, year, plot, trailer, [], [Season(0, episodes.toArray())])
         }
     }
     async loadLinks(data: any): Promise<Array<mediaLink>> {
@@ -91,7 +91,7 @@ export default class AkwamProvider implements ProviderClass {
         const iframeRequest = await axios.get(iframeLink)
         $ = cheerio.load(iframeRequest.data)
         const sources = $("source").map((index, element) => {
-            return convert.mediaLink(
+            return mediaLink(
                 "Akwam",
                 $(element).attr("src"),
                 $(element).attr("size"),
