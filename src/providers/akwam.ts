@@ -8,6 +8,7 @@ axios.interceptors.request.use(config => {
 });
 export default class AkwamProvider implements ProviderClass {
     name = "Akwam";
+    tvTypes = [tvTypes.MOVIE, tvTypes.SERIES, tvTypes.ANIME];
     mainUrl = "https://akwam.cx";
     language = "ar";
 
@@ -23,11 +24,13 @@ export default class AkwamProvider implements ProviderClass {
                 const titleElement = post.find("h3.entry-title > a")
                 return convert.searchResponse(
                     titleElement.text(),
-                    (json.title == "Movies"),
+                    (json.title == "Movies") ? tvTypes.MOVIE : tvTypes.SERIES,
                     titleElement.attr("href"),
                     post.find("div.entry-image img").attr("data-src"),
                     parseInt(post.find("div.entry-body span.badge-secondary").text().replace(/\D/g, '')),
-                    parseFloat(post.find("span.rating").text())
+                    parseFloat(post.find("span.rating").text()),
+                    [],
+                    titleElement.attr("href")
                 )
             }).toArray()
             return convert.HomePage(json.title, posts)
@@ -42,11 +45,13 @@ export default class AkwamProvider implements ProviderClass {
             if (!/\/movie\/|\/series\//.test(titleElement.attr("href"))) return null;
             return convert.searchResponse(
                 titleElement.text(),
-                titleElement.attr("href").includes("/movie/"),
+                (titleElement.attr("href").includes("/movie/")) ? tvTypes.MOVIE : tvTypes.SERIES,
                 titleElement.attr("href"),
                 post.find("div.entry-image img").attr("data-src"),
                 parseInt(post.find("div.entry-body span.badge-secondary").text().replace(/\D/g, '')),
-                parseFloat(post.find("span.rating").text())
+                parseFloat(post.find("span.rating").text()),
+                [],
+                titleElement.attr("href")
             )
         }).toArray()
     }
@@ -59,7 +64,7 @@ export default class AkwamProvider implements ProviderClass {
         const posterUrl = $("picture > img.img-fluid").first().attr("src")
         const trailer = $("a[class='btn btn-light btn-pill d-flex align-items-center']").attr("href")
         if (/movie/.test(url)) {
-            return convert.movieResponse(title, url, posterUrl, year, plot, trailer)
+            return convert.movieResponse(title, url, posterUrl, year, plot, trailer, [], url)
         } else {
             const episodes = $("div.row > div[class='bg-primary2 p-4 col-lg-4 col-md-6 col-12']").map((index, element) => {
                 const episode = $(element)
@@ -70,10 +75,12 @@ export default class AkwamProvider implements ProviderClass {
                     parseInt(episodeTitleElement.text().replace(/:.*/g, "").replace(/\D/g, '')),
                     0,
                     episode.find("picture > img").attr("src"),
-                    null
+                    null,
+                    null,
+                    episodeTitleElement.attr("href")
                 )
             })
-            return convert.seriesResponse(title, url, posterUrl, year, plot, trailer, [convert.Season(0, episodes.toArray())])
+            return convert.seriesResponse(title, url, posterUrl, year, plot, trailer, [], [convert.Season(0, episodes.toArray())])
         }
     }
     async loadLinks(data: any): Promise<Array<mediaLink>> {

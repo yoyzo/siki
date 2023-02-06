@@ -7,6 +7,7 @@ axios.interceptors.request.use(config => {
 });
 export default class NetfilmProvider implements ProviderClass {
     name = "Netfilm";
+    tvTypes = [tvTypes.MOVIE, tvTypes.SERIES, tvTypes.ANIME];
     mainUrl = "https://net-film.vercel.app/api";
     language = "en";
 
@@ -22,11 +23,13 @@ export default class NetfilmProvider implements ProviderClass {
                 let posts = element.homeMovies.map(el=> {
                     return convert.searchResponse(
                         el.title,
-                        (el.category == 1) ? false : true,
-                        btoa(`${this.mainUrl}/detail?category=${el.category}&id=${el.id}`),
+                        (el.category == 1) ? tvTypes.SERIES : tvTypes.MOVIE,
+                        `${this.mainUrl}/detail?category=${el.category}&id=${el.id}`,
                         el.imageUrl,
                         null,
-                        null
+                        null,
+                        [],
+                        btoa(`${this.mainUrl}/detail?category=${el.category}&id=${el.id}`)
                     )
                 })
                 finalList.push(convert.HomePage(element.homeSectionName, posts))
@@ -40,16 +43,18 @@ export default class NetfilmProvider implements ProviderClass {
             let value = res.data.results[element]
             return convert.searchResponse(
                 value.name,
-                (value.domainType == 1) ? false : true,
-                btoa(`${this.mainUrl}/detail?category=${value.domainType}&id=${value.id}`),
+                (value.domainType == 1) ? tvTypes.SERIES : tvTypes.MOVIE,
+                `${this.mainUrl}/detail?category=${value.domainType}&id=${value.id}`,
                 value.coverVerticalUrl,
                 parseInt(value.releaseTime),
-                parseFloat(value.sort)
+                parseFloat(value.sort),
+                [],
+                btoa(`${this.mainUrl}/detail?category=${value.domainType}&id=${value.id}`)
             )
         })
     }
     async load(url: string): Promise<movieInterface | seriesInterface> {
-        const res = (await axios.get(Buffer.from(url, 'base64').toString())).data.data
+        const res = (await axios.get(Buffer.from(url, 'base64').toString("utf-8"))).data.data
         const title = res.name
         const plot = res.introduction
         const year = parseInt(res.year)
@@ -58,25 +63,29 @@ export default class NetfilmProvider implements ProviderClass {
         if (res.category == 0) {
             return convert.movieResponse(
                 title, 
-                btoa(`${this.mainUrl}/episode?category=${res.category}&id=${res.id}&episode=${res.episodeVo[0].id}`), 
+                `${this.mainUrl}/episode?category=${res.category}&id=${res.id}&episode=${res.episodeVo[0].id}`, 
                 posterUrl, 
                 year, 
                 plot, 
-                trailer
+                trailer,
+                [],
+                btoa(`${this.mainUrl}/episode?category=${res.category}&id=${res.id}&episode=${res.episodeVo[0].id}`)
             )
         } else {
             const episodes = res.episodeVo.map((index, element) => {
                 let value = res.episodeVo[element]
                 return convert.Episode(
                     `Episode ${value.seriesNo}`,
-                    btoa(`${this.mainUrl}/episode?category=${res.category}&id=${res.id}&episode=${value.id}`),
+                    `${this.mainUrl}/episode?category=${res.category}&id=${res.id}&episode=${value.id}`,
                     parseInt(value.seriesNo),
                     res.seriesNo,
                     res.coverHorizontalUrl,
-                    null
+                    null,
+                    null,
+                    btoa(`${this.mainUrl}/episode?category=${res.category}&id=${res.id}&episode=${value.id}`)
                 )
             })
-            return convert.seriesResponse(title, url, posterUrl, year, plot, trailer, [convert.Season(res.seriesNo, episodes)])
+            return convert.seriesResponse(title, url, posterUrl, year, plot, trailer, [], [convert.Season(res.seriesNo, episodes)])
         }
     }
     async loadLinks(data: any): Promise<Array<mediaLink>> {

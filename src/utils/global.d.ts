@@ -1,6 +1,12 @@
 export { };
+import {tvTypesToWord} from "./convertFunctions";
 
 declare global {
+    const enum tvTypes {
+        MOVIE = 0,
+        SERIES = 1,
+        ANIME = 2,
+    }
     interface SikiClass {
         provider_name: string,
         homePage(): Promise<Array<homeInterface>>,
@@ -11,6 +17,7 @@ declare global {
     interface ProviderClass {
         name: string,
         mainUrl: string,
+        tvTypes: Array<tvTypes>,
         language: string,
         homePage(): Promise<Array<homeInterface>>,
         search(query: string): Promise<Array<searchInterface>>,
@@ -23,11 +30,13 @@ declare global {
     }
     interface searchInterface {
         title: string,
-        isMovie: boolean,
+        tvType: {code: tvTypes, name: string},
         url: string,
         posterUrl: string,
         year: number,
         rating: number,
+        genres: Array<string>,
+        data: any
     }
     interface movieInterface {
         title: string,
@@ -36,7 +45,9 @@ declare global {
         year: number,
         plot: string,
         trailer: string,
-        isMovie: true
+        genres: Array<string>
+        tvType: {code: tvTypes.MOVIE, name: string},
+        data: any
     }
     interface episodeInterface {
         title: string,
@@ -45,6 +56,8 @@ declare global {
         season: number,
         thumbnail: string,
         plot: string,
+        isDub: boolean | null,
+        data: any,
     }
     interface seasonInterface {
         season_number: number,
@@ -57,7 +70,19 @@ declare global {
         year: number,
         plot: string,
         trailer: string,
-        isMovie: false,
+        genres: Array<string>
+        tvType: {code: tvTypes.SERIES, name: string},
+        seasons: Array<seasonInterface>
+    }
+    interface animeInterface {
+        title: string,
+        url: string,
+        posterUrl: string,
+        year: number,
+        plot: string,
+        trailer: string,
+        genres: Array<string>
+        tvType: {code: tvTypes.ANIME, name: string},
         seasons: Array<seasonInterface>
     }
     interface mediaLink {

@@ -65,3 +65,10 @@ export class Siki implements SikiClass {
         }
     }
 }
+// for tests
+// (async()=>{
+//     let app = await attachApi(require("fastify")());
+//     await app.listen({port: 80}, () => {
+//         console.log("Running")
+//     })
+// })()

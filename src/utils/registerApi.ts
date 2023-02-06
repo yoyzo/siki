@@ -1,3 +1,4 @@
+import {tvTypesToWord} from "./convertFunctions";
 export function registerApi(providerClass: ProviderClass | any): boolean {
     try {
         globalThis.providers.push(providerClass)
@@ -12,6 +13,7 @@ export function registerApi(providerClass: ProviderClass | any): boolean {
                             "name": newProviderClass.name, 
                             "language": newProviderClass.language, 
                             "url": newProviderClass.mainUrl,
+                            "tvTypes": newProviderClass.tvTypes.map(value=> ({code: value, name: tvTypesToWord(value)})),
                             "home": hostUrl + "/home"
                         }
                     })
@@ -29,7 +31,7 @@ export function registerApi(providerClass: ProviderClass | any): boolean {
                     reply.code(200).send({
                         "status": 200,
                         "result": response.map(value => {
-                            value.posts = value.posts.map(obj => Object.assign(obj, { nextApi: hostUrl + "/load?data=" + obj.url }))
+                            value.posts = value.posts.map(obj => Object.assign(obj, { nextApi: hostUrl + "/load?data=" + obj.data }))
                             return value
                         })
                     })
@@ -49,7 +51,7 @@ export function registerApi(providerClass: ProviderClass | any): boolean {
                     reply.code(200).send({
                         "status": 200,
                         "result": response.map(value =>
-                            Object.assign(value, { nextApi: hostUrl + "/load?data=" + value.url })
+                            Object.assign(value, { nextApi: hostUrl + "/load?data=" + value.data })
                         )
                     })
                 } catch (err) {
@@ -66,9 +68,9 @@ export function registerApi(providerClass: ProviderClass | any): boolean {
                     if (!data || data.length <= 0) throw new Error("`data` is required");
                     let response = await newProviderClass.load(data)
                     if (response.episodes != undefined) {
-                        response.episodes = response.episodes.map(value => Object.assign(value, { nextApi: hostUrl + "/loadLinks?data=" + value.url }))
+                        response.episodes = response.episodes.map(value => Object.assign(value, { nextApi: hostUrl + "/loadLinks?data=" + value.data }))
                     } else {
-                        response = Object.assign(response, { nextApi: hostUrl + "/loadLinks?data=" + response.url })
+                        response = Object.assign(response, { nextApi: hostUrl + "/loadLinks?data=" + response.data })
                     }
                     reply.code(200).send({
                         "status": 200,

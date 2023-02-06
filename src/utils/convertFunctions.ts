@@ -6,13 +6,15 @@ export function HomePage(
 }
 export function searchResponse(
     title: string,
-    isMovie: boolean,
+    tvType: tvTypes,
     url: string,
     posterUrl: string,
     year: number,
-    rating: number
+    rating: number,
+    genres: Array<string>,
+    data: any
 ): searchInterface {
-    return { title, isMovie, url, posterUrl, year, rating }
+    return { title, tvType: {code: tvType, name: tvTypesToWord(tvType)}, url, posterUrl, year, rating, genres, data }
 }
 export function movieResponse(
     title: string,
@@ -20,9 +22,11 @@ export function movieResponse(
     posterUrl: string,
     year: number,
     plot: string,
-    trailer: string
+    trailer: string,
+    genres: Array<string>,
+    data: any
 ): movieInterface {
-    return { title, url, posterUrl, year, plot, trailer, isMovie: true }
+    return { title, url, posterUrl, year, plot, trailer, genres, tvType: {code: tvTypes.MOVIE, name: tvTypesToWord(tvTypes.MOVIE)}, data }
 }
 export function Episode(
     title: string,
@@ -31,8 +35,10 @@ export function Episode(
     season: number,
     thumbnail: string,
     plot: string,
+    isDub: boolean,
+    data: any,
 ): episodeInterface {
-    return { title, url, episode, season, thumbnail, plot }
+    return { title, url, episode, season, thumbnail, plot, isDub, data }
 }
 export function Season(
     season_number: number,
@@ -48,9 +54,22 @@ export function seriesResponse(
     year: number,
     plot: string,
     trailer: string,
+    genres: Array<string>,
     seasons: Array<seasonInterface>
 ): seriesInterface {
-    return { title, url, posterUrl, year, plot, trailer, isMovie: false, seasons }
+    return { title, url, posterUrl, year, plot, trailer, genres, tvType: {code: tvTypes.SERIES, name: tvTypesToWord(tvTypes.SERIES)}, seasons }
+}
+export function animeResponse(
+    title: string,
+    url: string,
+    posterUrl: string,
+    year: number,
+    plot: string,
+    trailer: string,
+    genres: Array<string>,
+    seasons: Array<seasonInterface>
+): animeInterface {
+    return { title, url, posterUrl, year, plot, trailer, genres, tvType: {code: tvTypes.ANIME, name: tvTypesToWord(tvTypes.ANIME)}, seasons }
 }
 export function mediaLink(
     title: string,
@@ -61,4 +80,12 @@ export function mediaLink(
     isM3U8: boolean,
 ): mediaLink {
     return { title, url, quality, subtitles, headers, isM3U8 }
+}
+export function tvTypesToWord(tvType: tvTypes) {
+    let types = {
+        [tvTypes.MOVIE]: "Movie",
+        [tvTypes.SERIES]: "TVSeries",
+        [tvTypes.ANIME]: "Anime",
+    }    
+    return types[tvType]
 }
