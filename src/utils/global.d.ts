@@ -49,9 +49,21 @@ declare global {
         year: number,
         plot: string,
         trailer: string,
-        genres: Array<string>
+        genres: Array<string>,
+        age_rated: string,
+        country: string,
+        language: string,
+        cast: Array<castInterface>,
+        imdbId: string,
+        rating: number,
+        recommendation: Array<searchInterface>,
         tvType: {code: tvTypes.MOVIE, name: string},
         data: any
+    }
+    interface castInterface {
+        name: string,
+        knownAs: string,
+        profile: string,
     }
     interface episodeInterface {
         title: string,
@@ -60,7 +72,7 @@ declare global {
         season: number,
         thumbnail: string,
         plot: string,
-        isDub: boolean | null,
+        type: "sub" | "dub" | "both",
         data: any,
     }
     interface seasonInterface {
@@ -74,7 +86,14 @@ declare global {
         year: number,
         plot: string,
         trailer: string,
-        genres: Array<string>
+        genres: Array<string>,
+        age_rated: string,
+        country: string,
+        language: string,
+        cast: Array<castInterface>,
+        imdbId: string,
+        rating: number,
+        recommendation: Array<searchInterface>,
         tvType: {code: tvTypes.SERIES, name: string},
         seasons: Array<seasonInterface>
     }
@@ -85,7 +104,15 @@ declare global {
         year: number,
         plot: string,
         trailer: string,
-        genres: Array<string>
+        genres: Array<string>,
+        age_rated: string,
+        country: string,
+        language: string,
+        cast: Array<castInterface>,
+        malId: string,
+        aniId: string,
+        rating: number,
+        recommendation: Array<searchInterface>,
         tvType: {code: tvTypes.ANIME, name: string},
         seasons: Array<seasonInterface>
     }

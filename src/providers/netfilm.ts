@@ -58,7 +58,22 @@ export default class NetfilmProvider implements ProviderClass {
         const plot = res.introduction
         const year = parseInt(res.year)
         const posterUrl = res.coverHorizontalUrl
+        const rating = res.score
+        const genres = res.tagList.map(value=> value.name)
+        const country = res.areaList[0].name
         const trailer = null
+        const rec = res.likeList.map(value=> {
+            return searchResponse(
+                value.name, 
+                (value.category == 1) ? tvTypes.SERIES : tvTypes.MOVIE,
+                `${this.mainUrl}/detail?category=${value.category}&id=${value.id}`,
+                value.coverVerticalUrl,
+                null,
+                null,
+                null,
+                btoa(`${this.mainUrl}/detail?category=${value.category}&id=${value.id}`)
+                )
+        })
         if (res.category == 0) {
             return movieResponse(
                 title, 
@@ -67,7 +82,14 @@ export default class NetfilmProvider implements ProviderClass {
                 year, 
                 plot, 
                 trailer,
-                [],
+                genres,
+                null,
+                country,
+                null,
+                null,
+                null,
+                rating,
+                rec,
                 btoa(`${this.mainUrl}/episode?category=${res.category}&id=${res.id}&episode=${res.episodeVo[0].id}`)
             )
         } else {
@@ -84,7 +106,23 @@ export default class NetfilmProvider implements ProviderClass {
                     btoa(`${this.mainUrl}/episode?category=${res.category}&id=${res.id}&episode=${value.id}`)
                 )
             })
-            return seriesResponse(title, url, posterUrl, year, plot, trailer, [], [Season(res.seriesNo, episodes)])
+            return seriesResponse(
+                title, 
+                atob(url), 
+                posterUrl, 
+                year, 
+                plot, 
+                trailer, 
+                genres,
+                null,
+                country,
+                null,
+                null,
+                null,
+                rating,
+                rec,
+                [Season(res.seriesNo, episodes)]
+            )
         }
     }
     async loadLinks(data: any): Promise<Array<mediaLink>> {

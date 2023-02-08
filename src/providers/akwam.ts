@@ -1,6 +1,6 @@
 const axios = require("axios")
 const cheerio = require("cheerio");
-import { Episode, HomePage, Season, mediaLink, movieResponse, searchResponse, seriesResponse } from "../utils/convert";
+import { Cast, Episode, HomePage, Season, getImdbId, mediaLink, movieResponse, searchResponse, seriesResponse } from "../utils/convert";
 
 axios.interceptors.request.use(config => {
     config.headers['Accept-Encoding'] = 'null';
@@ -61,10 +61,52 @@ export default class AkwamProvider implements ProviderClass {
         const title = $("h1.entry-title").text()
         const plot = $("div.widget-body > h2 p").text()
         const year = parseInt($("div[class=\"font-size-16 text-white mt-2\"]:contains(السنة)").text().replace(/.*:| /g, ""))
+        const age_rated = $(".badge-info").text()
+        const country = $("div[class=\"font-size-16 text-white mt-2\"]:contains(انتاج)").text().replace(/.*:/g, "")
+        const language = $("div[class=\"font-size-16 text-white mt-2\"]:contains(اللغة)").text().replace(/.*:/g, "")
+        const cast = $("div.col-lg-auto").map((index, element) => {
+            let c = $(element)
+            let name = c.find(".entry-title").text()
+            return Cast(name, name, c.find("img.img-fluid").attr("src"))
+        }).toArray()
+        const imdbId = getImdbId($("div.mt-2:nth-child(2) > a:nth-child(1)").attr("href"))
+        const rating = parseFloat($("span.mx-2").text().replace(/.*\//g, ""))
         const posterUrl = $("picture > img.img-fluid").first().attr("src")
         const trailer = $("a[class='btn btn-light btn-pill d-flex align-items-center']").attr("href")
+        const genres = $("a.badge").map((index, element) => { return $(element).text() }).toArray()
+        const rec = $("div.row > div[class='col-6 col-lg-2 col-md-4 mb-12 d-none']").map((index, element) => {
+            const post = $(element)
+            const titleElement = post.find("h3.entry-title > a")
+            if (!/\/movie\/|\/series\//.test(titleElement.attr("href"))) return null;
+            return searchResponse(
+                titleElement.text(),
+                (titleElement.attr("href").includes("/movie/")) ? tvTypes.MOVIE : tvTypes.SERIES,
+                titleElement.attr("href"),
+                post.find("div.entry-image img").attr("data-src"),
+                parseInt(post.find("div.entry-body span.badge-secondary").text().replace(/\D/g, '')),
+                parseFloat(post.find("span.rating").text()),
+                [],
+                titleElement.attr("href")
+            )
+        }).toArray()
         if (/movie/.test(url)) {
-            return movieResponse(title, url, posterUrl, year, plot, trailer, [], url)
+            return movieResponse(
+                title, 
+                url, 
+                posterUrl, 
+                year, 
+                plot, 
+                trailer,
+                genres, 
+                age_rated, 
+                country, 
+                language, 
+                cast, 
+                imdbId, 
+                rating,
+                rec,
+                url
+            )
         } else {
             const episodes = $("div.row > div[class='bg-primary2 p-4 col-lg-4 col-md-6 col-12']").map((index, element) => {
                 const episode = $(element)
@@ -80,7 +122,23 @@ export default class AkwamProvider implements ProviderClass {
                     episodeTitleElement.attr("href")
                 )
             })
-            return seriesResponse(title, url, posterUrl, year, plot, trailer, [], [Season(0, episodes.toArray())])
+            return seriesResponse(
+                title, 
+                url, 
+                posterUrl, 
+                year, 
+                plot, 
+                trailer, 
+                genres, 
+                age_rated, 
+                country, 
+                language, 
+                cast, 
+                imdbId, 
+                rating,
+                rec,
+                [Season(0, episodes.toArray())]
+            )
         }
     }
     async loadLinks(data: any): Promise<Array<mediaLink>> {

@@ -7,5 +7,7 @@ declare module "convert" {
     export function Season();
     export function Episode();
     export function mediaLink();
+    export function Cast();
     export function tvTypesToWord();
+    export function getImdbId();
 }

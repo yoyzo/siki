@@ -24,9 +24,16 @@ export function movieResponse(
     plot: string,
     trailer: string,
     genres: Array<string>,
+    age_rated: string,
+    country: string,
+    language: string,
+    cast: Array<castInterface>,
+    imdbId: string,
+    rating: number,
+    recommendation: Array<searchInterface>,
     data: any
 ): movieInterface {
-    return { title, url, posterUrl, year, plot, trailer, genres, tvType: {code: tvTypes.MOVIE, name: tvTypesToWord(tvTypes.MOVIE)}, data }
+    return { title, url, posterUrl, year, plot, trailer, genres, age_rated, country, language, cast, imdbId, rating, recommendation, tvType: {code: tvTypes.MOVIE, name: tvTypesToWord(tvTypes.MOVIE)}, data }
 }
 export function Episode(
     title: string,
@@ -35,10 +42,10 @@ export function Episode(
     season: number,
     thumbnail: string,
     plot: string,
-    isDub: boolean,
+    type: "sub" | "dub" | "both",
     data: any,
 ): episodeInterface {
-    return { title, url, episode, season, thumbnail, plot, isDub, data }
+    return { title, url, episode, season, thumbnail, plot, type, data }
 }
 export function Season(
     season_number: number,
@@ -55,9 +62,16 @@ export function seriesResponse(
     plot: string,
     trailer: string,
     genres: Array<string>,
+    age_rated: string,
+    country: string,
+    language: string,
+    cast: Array<castInterface>,
+    imdbId: string,
+    rating: number,
+    recommendation: Array<searchInterface>,
     seasons: Array<seasonInterface>
 ): seriesInterface {
-    return { title, url, posterUrl, year, plot, trailer, genres, tvType: {code: tvTypes.SERIES, name: tvTypesToWord(tvTypes.SERIES)}, seasons }
+    return { title, url, posterUrl, year, plot, trailer, genres, age_rated, country, language, cast, imdbId, rating, recommendation, tvType: {code: tvTypes.SERIES, name: tvTypesToWord(tvTypes.SERIES)}, seasons }
 }
 export function animeResponse(
     title: string,
@@ -67,9 +81,17 @@ export function animeResponse(
     plot: string,
     trailer: string,
     genres: Array<string>,
+    age_rated: string,
+    country: string,
+    language: string,
+    cast: Array<castInterface>,
+    malId: string,
+    aniId: string,
+    rating: number,
+    recommendation: Array<searchInterface>,
     seasons: Array<seasonInterface>
 ): animeInterface {
-    return { title, url, posterUrl, year, plot, trailer, genres, tvType: {code: tvTypes.ANIME, name: tvTypesToWord(tvTypes.ANIME)}, seasons }
+    return { title, url, posterUrl, year, plot, trailer, genres, age_rated, country, language, cast, malId, aniId, rating, recommendation, tvType: {code: tvTypes.ANIME, name: tvTypesToWord(tvTypes.ANIME)}, seasons }
 }
 export function mediaLink(
     title: string,
@@ -81,6 +103,13 @@ export function mediaLink(
 ): mediaLink {
     return { title, url, quality, subtitles, headers, isM3U8 }
 }
+export function Cast(
+    name: string,
+    knownAs: string,
+    profile: string,
+) {
+    return { name, knownAs, profile }
+}
 export function tvTypesToWord(tvType: tvTypes) {
     let types = {
         [tvTypes.MOVIE]: "Movie",
@@ -88,4 +117,7 @@ export function tvTypesToWord(tvType: tvTypes) {
         [tvTypes.ANIME]: "Anime",
     }    
     return types[tvType]
+}
+export function getImdbId(url) {
+    return url.match(/tt[1-9].*[1-9]/g)[0]
 }

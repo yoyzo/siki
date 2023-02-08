@@ -67,11 +67,17 @@ export function registerApi(providerClass: ProviderClass | any): boolean {
                     const data = request.query.data
                     if (!data || data.length <= 0) throw new Error("`data` is required");
                     let response = await newProviderClass.load(data)
-                    if (response.episodes != undefined) {
-                        response.episodes = response.episodes.map(value => Object.assign(value, { nextApi: hostUrl + "/loadLinks?data=" + value.data }))
+                    if (response.seasons != undefined) {
+                        response.seasons = response.seasons.map(value => {
+                            value.episodes = value.episodes.map(v=> 
+                                Object.assign(v, { nextApi: hostUrl + "/loadLinks?data=" + v.data })
+                                )
+                            return value
+                        })
                     } else {
                         response = Object.assign(response, { nextApi: hostUrl + "/loadLinks?data=" + response.data })
                     }
+                    response.recommendation = response.recommendation.map(val=> Object.assign(val, { nextApi: hostUrl + "/loadLinks?data=" + val.data }))
                     reply.code(200).send({
                         "status": 200,
                         "result": response
